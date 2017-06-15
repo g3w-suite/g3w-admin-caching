@@ -22,6 +22,7 @@ Add like git submodule from main g3w-admin directory
 Install pip requirements.txt:
 
 ::
+
     pip install g3w-admin/caching/requirements.txt
 
 Add caching module to G3W_LOCAL_MORE_APPS config value inside local_settings.py:
