@@ -2,9 +2,7 @@
 G3W-ADMIN-CACHING
 ==================
 
-G3W-ADMIN-CACHING module for caching layers data by tilestache_.
-
-    tilestache_: http://tilestache.org/
+G3W-ADMIN-CACHING module for caching layers data by tilestache (http://tilestache.org/).
 
 Requirements
 ------------
