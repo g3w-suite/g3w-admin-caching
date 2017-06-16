@@ -1,12 +1,14 @@
 from django.conf import settings
 from django.apps import apps
+from django.http.request import QueryDict
 from django.core.urlresolvers import reverse
 from TileStache import parseConfig
 from TileStache.Config import _parseConfigLayer
 from caching.models import G3WCachingLayer
+from django.apps import apps
 
-tilestache_cfg = None
-
+def get_config():
+    return apps.get_app_config('caching').tilestache_cfg
 
 class TilestacheConfig(object):
 
@@ -41,7 +43,7 @@ class TilestacheConfig(object):
         # get caching layers activated
         caching_layers = G3WCachingLayer.objects.all()
         for caching_layer in caching_layers:
-            self.add_layer(str(caching_layer.app_name + str(caching_layer.layer_id)), caching_layer)
+            self.add_layer(str(caching_layer), caching_layer)
 
     def build_layer_dict(self, caching_layer):
 
@@ -51,16 +53,29 @@ class TilestacheConfig(object):
 
         # build template
         base_tamplate = reverse('ows', kwargs={
-            'group_slug': '0',
+            'group_slug': '0', # avoid a query
             'project_type': str(caching_layer.app_name),
             'project_id': str(layer.project.pk)
         })
+
+        # build query dict fo tilestache
+        q = QueryDict('', mutable=True)
+        q['SERVICE'] = 'WMS'
+        q['VERSION'] = '1.1.1'
+        q['REQUEST'] = 'GetMap'
+        q['BBOX'] = '$xmin,$ymin,$xmax,$ymax'
+        q['SRS'] = '$srs'
+        q['TRANSPARENT'] = 'true'
+        q['LAYERS'] = layer.name
+        q['WIDTH'] = '256'
+        q['HEIGHT'] = '256'
+
 
         # build dict
         layer_dict = {
             'provider': {
                 'name': 'url template',
-                'template': ''
+                'template': '{}?{}'.format(base_tamplate, q.urlencode())
             },
             # 'projection': ''
         }

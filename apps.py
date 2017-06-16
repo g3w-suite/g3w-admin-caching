@@ -1,9 +1,5 @@
 from django.apps import AppConfig
 
-# init tilestache config.obj
-tilestache_cfg = None
-
-
 class CachingConfig(AppConfig):
 
     name = 'caching'
@@ -16,7 +12,7 @@ class CachingConfig(AppConfig):
 
         # init tilestache config.obj
         from .utils import TilestacheConfig
-        caching.utils.tilestache_cfg = TilestacheConfig("caching/tilestache.cfg")
+        self.tilestache_cfg = TilestacheConfig("caching/tilestache.cfg")
 
 
 
