@@ -10,4 +10,3 @@ class G3WCachingLayer(models.Model):
 
     def __unicode__(self):
         return "{}{}".format(self.app_name, self.layer_id)
-

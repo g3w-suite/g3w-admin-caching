@@ -14,12 +14,15 @@ class TilestacheConfig(object):
 
     config_dict = dict()
 
-    def __init__(self, tilestache_config_file):
+    def __init__(self):
 
         self.cache_dict = self.init_cache_dict()
         self.config_dict.update({'cache': self.cache_dict})
         self.config = parseConfig(self.config_dict)
-        self.init_layers()
+        try:
+            self.init_layers()
+        except:
+            pass
 
     def init_cache_dict(self):
 
