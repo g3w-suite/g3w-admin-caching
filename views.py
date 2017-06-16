@@ -2,6 +2,7 @@
 from django.apps import apps
 from django.views.generic import FormView
 from django.http import HttpResponse
+from django.db import transaction
 import TileStache
 from rest_framework.views import APIView
 from rest_framework import status
@@ -45,6 +46,7 @@ class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
 
         return kwargs
 
+    @transaction.atomic
     def form_valid(self, form):
 
         tilestache_cfg = get_config()
@@ -64,7 +66,7 @@ class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
 class TileStacheTileApiView(APIView):
     """
     renders tilestache tiles
-    from django-tilestache:
+    based on django-tilestache tilestache api view:
     https://gitlab.sigmageosistemas.com.br/dev/django-tilestache/blob/master/django_tilestache/views.py
     """
     def get(self, request, layer_name, z, x, y, extension):
@@ -74,8 +76,8 @@ class TileStacheTileApiView(APIView):
 
         try:
             extension = extension.upper()
-            config = get_config()
-            path_info = "%s/%s/%s/%s.%s" % (layer_name, z, x, y, extension)
+            config = get_config().config
+            path_info = "{}/{}/{}/{}.{}".format(layer_name, z, x, y, extension)
             coord, extension = TileStache.splitPathInfo(path_info)[1:]
             try:
                 tilestache_layer = config.layers[layer_name]

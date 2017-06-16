@@ -65,6 +65,7 @@ class TilestacheConfig(object):
         q['REQUEST'] = 'GetMap'
         q['BBOX'] = '$xmin,$ymin,$xmax,$ymax'
         q['SRS'] = '$srs'
+        q['FORMAT'] = 'image/png'
         q['TRANSPARENT'] = 'true'
         q['LAYERS'] = layer.name
         q['WIDTH'] = '256'
@@ -75,9 +76,10 @@ class TilestacheConfig(object):
         layer_dict = {
             'provider': {
                 'name': 'url template',
-                'template': '{}?{}'.format(base_tamplate, q.urlencode())
+                'template': '{}{}?{}'.format(settings.TILESTACHE_LAYERS_HOST, base_tamplate, q.urlencode(safe='$'))
             },
-            # 'projection': ''
+            'projection': 'caching.utils.projections:CustomXYZGridProjection(\'EPSG:{}\')'.
+                format(layer.project.group.srid.auth_srid)
         }
 
         return layer_dict
