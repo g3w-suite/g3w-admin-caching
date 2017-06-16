@@ -44,6 +44,7 @@ class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
         if form.cleaned_data['active']:
             if not self.activated:
                 G3WCachingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id)
+
         else:
             if self.activated:
                 self.activated.delete()
