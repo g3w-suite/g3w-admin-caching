@@ -13,7 +13,7 @@ from .models import G3WCachingLayer
 from .utils import get_config
 
 
-class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
+class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
     """
     View for enabled caching layer form
     """
@@ -23,14 +23,14 @@ class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
 
     def dispatch(self, request, *args, **kwargs):
         self.layer_id = kwargs['layer_id']
-        return super(ActiveCaqchingLayerView, self).dispatch(request, *args, **kwargs)
+        return super(ActiveCachingLayerView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return None
 
     def get_form_kwargs(self):
 
-        kwargs = super(ActiveCaqchingLayerView, self).get_form_kwargs()
+        kwargs = super(ActiveCachingLayerView, self).get_form_kwargs()
 
         # get model by app
         Layer = apps.get_app_config(self.app_name).get_model('layer')
@@ -60,7 +60,7 @@ class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
                 tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
 
-        return super(ActiveCaqchingLayerView, self).form_valid(form)
+        return super(ActiveCachingLayerView, self).form_valid(form)
 
 
 class TileStacheTileApiView(APIView):
