@@ -1,9 +1,9 @@
 import re
 from ModestMaps.Core import Point, Coordinate
-from TileStache.Geography import SphericalMercator,WGS84
+from TileStache.Geography import SphericalMercator, WGS84
 
 class CustomGridProjection():
-    def __init__(self,xyz,srs):
+    def __init__(self, xyz, srs):
         self.xyz = xyz
         self.srs = self.normalizeSrs(srs)
         self.tilesize = 256
@@ -35,9 +35,9 @@ class CustomGridProjection():
 
 
 class CustomXYZGridProjection(CustomGridProjection):
-    def __init__(self,srs):
-        CustomGridProjection.__init__(self,True,srs)
+    def __init__(self, srs):
+        CustomGridProjection.__init__(self, True, srs)
 
 class CustomTMSGridProjection(CustomGridProjection):
-    def __init__(self,srs):
-        CustomGridProjection.__init__(self,False,srs)
+    def __init__(self, srs):
+        CustomGridProjection.__init__(self, False, srs)

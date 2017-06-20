@@ -71,7 +71,7 @@ class TilestacheConfig(object):
         q['FORMAT'] = 'image/png'
         q['TRANSPARENT'] = 'true'
         q['LAYERS'] = layer.name
-        q['WIDTH'] = '$with'
+        q['WIDTH'] = '$width'
         q['HEIGHT'] = '$height'
 
 
