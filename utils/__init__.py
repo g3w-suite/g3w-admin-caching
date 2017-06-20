@@ -71,8 +71,8 @@ class TilestacheConfig(object):
         q['FORMAT'] = 'image/png'
         q['TRANSPARENT'] = 'true'
         q['LAYERS'] = layer.name
-        q['WIDTH'] = '256'
-        q['HEIGHT'] = '256'
+        q['WIDTH'] = '$with'
+        q['HEIGHT'] = '$height'
 
 
         # build dict
@@ -80,11 +80,6 @@ class TilestacheConfig(object):
             'provider': {
                 'name': 'url template',
                 'template': '{}{}?{}'.format(settings.TILESTACHE_LAYERS_HOST, base_tamplate, q.urlencode(safe='$'))
-            },
-            'metatile': {
-                'rows': 2,
-                'column': 2,
-                'buffer': 64
             },
             'projection': 'caching.utils.projections:CustomXYZGridProjection(\'EPSG:{}\')'.
                 format(layer.project.group.srid.auth_srid)
