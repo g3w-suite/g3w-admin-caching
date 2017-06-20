@@ -11,7 +11,7 @@ from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3
 from .forms import ActiveCachingLayerForm
 from .models import G3WCachingLayer
 from .utils import get_config
-
+from .api.permissions import TilePermission
 
 class ActiveCaqchingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
     """
@@ -69,6 +69,11 @@ class TileStacheTileApiView(APIView):
     based on django-tilestache tilestache api view:
     https://gitlab.sigmageosistemas.com.br/dev/django-tilestache/blob/master/django_tilestache/views.py
     """
+
+    permission_classes = (
+        TilePermission,
+    )
+
     def get(self, request, layer_name, z, x, y, extension):
         """
         Fetch tiles with tilestache.
