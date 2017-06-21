@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.apps import apps
-from django.views.generic import FormView
-from django.http import HttpResponse
+from django.views.generic import FormView, View
+from django.http import HttpResponse, JsonResponse
 from django.db import transaction
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 import TileStache
 from rest_framework.views import APIView
 from rest_framework import status
@@ -13,13 +15,14 @@ from .models import G3WCachingLayer
 from .utils import get_config
 from .api.permissions import TilePermission
 
+
 class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
     """
     View for enabled caching layer form
     """
 
     form_class = ActiveCachingLayerForm
-    template_name = 'editing/editing_layer_active_form.html'
+    template_name = 'caching/caching_layer_active_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         self.layer_id = kwargs['layer_id']
@@ -35,6 +38,13 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         # get model by app
         Layer = apps.get_app_config(self.app_name).get_model('layer')
         self.layer = Layer.objects.get(pk=self.layer_id)
+
+        kwargs['initial']['reset_layer_cache_url'] = reverse('caching-layer-reset', args=[
+            self.layer.project.group.slug,
+            self.app_name,
+            self.project_slug,
+            self.layer.pk
+        ])
 
         # try to find notes config
         try:
@@ -62,6 +72,18 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         return super(ActiveCachingLayerView, self).form_valid(form)
 
+
+class ResetLayerCacheView(View):
+    """
+    Reset cache layer
+    """
+    def get(self, request, *args, **kwargs):
+
+        tilestache_cfg = get_config()
+        layer_key_name = '{}{}'.format(kwargs['project_type'], kwargs['layer_id'])
+        tilestache_cfg.erase_cache_layer(layer_key_name)
+
+        return JsonResponse({'status': 'ok', 'message': _('Cache erased!')})
 
 class TileStacheTileApiView(APIView):
     """

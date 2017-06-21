@@ -14,9 +14,16 @@
         {% crispy form %}
         </div>
     </div>
-    <script>
-        $check = $("#caching_layer_form").find('#id_active');
-        $check.on('ifChanged', check_active_status);
-        check_active_status();
-    </script>
 </form>
+<script>
+
+    $('#caching_layer_form').find('.btn').click(function(){
+        var $reset_url = $('#caching_layer_form').find('#id_reset_layer_cache_url').val();
+        var $that = $(this);
+        $.get($reset_url, function(data){
+            $("<span></span>").css('margin-left','4px').css('margin-top', '8px').html(data.message).insertAfter($that);
+        }, 'json').fail(function(){
+            $("<span></span>").css('margin-left','4px').css('margin-top', '8px').html('Error').insertAfter($that);
+        });
+    });
+</script>

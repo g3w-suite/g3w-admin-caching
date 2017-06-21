@@ -2,9 +2,10 @@ from django.apps import apps
 from django.template import loader, Context
 from django.dispatch import receiver
 from django.conf import settings
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
 from core.signals import load_layer_actions, after_serialized_project_layer
 from caching.models import G3WCachingLayer
+from caching.utils import get_config
 
 @receiver(load_layer_actions)
 def editingLayerAction(sender, **kwargs):
@@ -69,5 +70,25 @@ def pre_delete_layer(sender, **kwargs):
         if sender._meta.object_name == 'Layer':
             try:
                 G3WCachingLayer.objects.get(app_name=app_name, layer_id=kwargs['instance'].pk).delete()
+            except:
+                pass
+
+
+@receiver(post_save)
+def post_save_layer(sender, **kwargs):
+    """
+    Delete caching_layer  record when layer is deleted.
+    :param sender:
+    :param kwargs:
+    :return:
+    """
+    app_name = sender._meta.app_label
+    if app_name in settings.G3WADMIN_PROJECT_APPS:
+        if sender._meta.object_name == 'Layer':
+            try:
+                tilestache_cfg = get_config()
+                layer_key_name = '{}{}'.format(sender._meta.app_label, kwargs['instance'].pk)
+                if layer_key_name in tilestache_cfg.config.layers:
+                    tilestache_cfg.erase_cache_layer(layer_key_name)
             except:
                 pass

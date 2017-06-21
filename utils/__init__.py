@@ -4,8 +4,10 @@ from django.http.request import QueryDict
 from django.core.urlresolvers import reverse
 from TileStache import parseConfig
 from TileStache.Config import _parseConfigLayer
+from TileStache.Caches import Disk
 from caching.models import G3WCachingLayer
 from django.apps import apps
+import shutil
 
 def get_config():
     return apps.get_app_config('caching').tilestache_cfg
@@ -105,6 +107,15 @@ class TilestacheConfig(object):
         """
         del(self.config.layers[layer_key_name])
 
-        # todo: delete cache direcotory
+    def erase_cache_layer(self, layer_key_name):
+        """
+        Delete cache by provder cache
+        :param layer_key_name:
+        :return:
+        """
 
+        if isinstance(self.config.cache, Disk):
+            shutil.rmtree("{}/{}".format(self.config.cache.cachepath, layer_key_name), ignore_errors=True)
+
+        # todo: for other cache type
 
