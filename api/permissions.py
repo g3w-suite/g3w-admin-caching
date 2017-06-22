@@ -12,7 +12,7 @@ class TilePermission(BasePermission):
 
     def has_permission(self, request, view):
 
-        #qs = G3WCachingLayer.objects.annotate(layer_key_name=Concat('app_name', 'layer_id'))
-        #cl = qs.filter(layer_key_name=view.kwargs['layer_name'])
+        qs = G3WCachingLayer.objects.annotate(layer_key_name=Concat('app_name', 'layer_id'))
+        cl = qs.filter(layer_key_name=view.kwargs['layer_name'])
 
         return True
