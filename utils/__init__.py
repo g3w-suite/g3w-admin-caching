@@ -31,7 +31,10 @@ def get_config():
         if cid != tilestache_cfg.get_cache_hash():
             tilestache_cfg = TilestacheConfig()
             tilestache_cfg.set_cache_hash(cid)
+            apps.get_app_config('caching').tilestache_cfg = tilestache_cfg
             logger.debug('Cache hush: {}'.format(tilestache_cfg.get_cache_hash()))
+        else:
+            logger.debug('Diverso')
     return tilestache_cfg
 
 class TilestacheConfig(object):
