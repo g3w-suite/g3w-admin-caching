@@ -11,6 +11,11 @@ from django.core.cache import cache
 import shutil
 import os
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
+
 def get_config():
     """
     Get global config tielstache object
@@ -19,11 +24,14 @@ def get_config():
 
     # check if file has exixst
     tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
+    logger.debug('ID Tielstache_cfg: {}'.format(id(tilestache_cfg)))
     if os.path.exists(tilestache_cfg.file_hash_name):
         id = tilestache_cfg.read_hash_file()
+        logger.debug('Read hash file: {}'.format(id))
         if id != tilestache_cfg.get_cache_hash():
             tilestache_cfg = TilestacheConfig()
             tilestache_cfg.set_cache_hash()
+            logger.debug('Cache hush: {}'.format(tilestache_cfg.get_cache_hash()))
     return tilestache_cfg
 
 class TilestacheConfig(object):
