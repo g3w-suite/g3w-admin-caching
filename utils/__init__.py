@@ -160,11 +160,12 @@ class TilestacheConfig(object):
         :return:
         """
         if not os.path.exists(self.file_hash_name) or force:
+            cid = id(self)
             f = open(self.file_hash_name, 'w')
-            f.write(str(id(self)))
+            f.write(str(cid))
             f.close()
 
-            self.set_cache_hash()
+            self.set_cache_hash(cid)
 
     def read_hash_file(self):
 
