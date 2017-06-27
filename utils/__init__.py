@@ -123,6 +123,7 @@ class TilestacheConfig(object):
         """
         del(self.config.layers[layer_key_name])
 
+
     def erase_cache_layer(self, layer_key_name):
         """
         Delete cache by provder cache
@@ -139,7 +140,10 @@ class TilestacheConfig(object):
         cache.set(self.cache_key, id(self), None)
 
     def get_cache_hash(self):
-        cache.get(self.cache_key)
+        return cache.get(self.cache_key)
+
+    def reset_cache_hash(self):
+        cache.delete(self.cache_key)
 
     def save_hash_file(self, force=False):
         """
@@ -149,7 +153,7 @@ class TilestacheConfig(object):
         """
         if not os.path.exists(self.file_hash_name) or force:
             f = open(self.file_hash_name, 'w')
-            f.write(id(self))
+            f.write(str(id(self)))
             f.close()
 
             self.set_cache_hash()
@@ -160,7 +164,7 @@ class TilestacheConfig(object):
             f = open(self.file_hash_name, 'r')
             id = f.read()
             f.close()
-            return id
+            return int(id) if id else None
         else:
             return None
 
