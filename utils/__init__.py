@@ -21,7 +21,7 @@ def get_config():
     Get global config tielstache object
     :return:
     """
-
+    logger.debug('PID {}'.format(os.getpid()))
     # check if file has exixst
     tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
     logger.debug('ID Tielstache_cfg: {}'.format(id(tilestache_cfg)))
