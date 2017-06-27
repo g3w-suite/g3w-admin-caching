@@ -7,14 +7,30 @@ from TileStache.Config import _parseConfigLayer
 from TileStache.Caches import Disk
 from caching.models import G3WCachingLayer
 from django.apps import apps
+from django.core.cache import cache
 import shutil
+import os
 
 def get_config():
-    return apps.get_app_config('caching').tilestache_cfg
+    """
+    Get global config tielstache object
+    :return:
+    """
+
+    # check if file has exixst
+    tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
+    if os.path.exists(tilestache_cfg.file_hash_name):
+        id = tilestache_cfg.read_hash_file()
+        if id != tilestache_cfg.get_cache_hash():
+            tilestache_cfg = TilestacheConfig()
+            tilestache_cfg.set_cache_hash()
+    return tilestache_cfg
 
 class TilestacheConfig(object):
 
     config_dict = dict()
+    file_hash_name = 'tilestache_hash_file.txt'
+    cache_key = 'tilestache_cfg_id'
 
     def __init__(self):
 
@@ -118,4 +134,35 @@ class TilestacheConfig(object):
             shutil.rmtree("{}/{}".format(self.config.cache.cachepath, layer_key_name), ignore_errors=True)
 
         # todo: for other cache type
+
+    def set_cache_hash(self):
+        cache.set(self.cache_key, id(self), None)
+
+    def get_cache_hash(self):
+        cache.get(self.cache_key)
+
+    def save_hash_file(self, force=False):
+        """
+        Write has file for check tilestache config between processes
+        :param force:
+        :return:
+        """
+        if not os.path.exists(self.file_hash_name) or force:
+            f = open(self.file_hash_name, 'w')
+            f.write(id(self))
+            f.close()
+
+            self.set_cache_hash()
+
+    def read_hash_file(self):
+
+        if os.path.exists(self.file_hash_name):
+            f = open(self.file_hash_name, 'r')
+            id = f.read()
+            f.close()
+            return id
+        else:
+            return None
+
+
 
