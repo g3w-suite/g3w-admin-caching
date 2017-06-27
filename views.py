@@ -69,7 +69,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             if self.activated:
                 tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
-        tilestache_cfg.save_hash_file(force=True)
+        #tilestache_cfg.save_hash_file(force=True)
 
         return super(ActiveCachingLayerView, self).form_valid(form)
 
