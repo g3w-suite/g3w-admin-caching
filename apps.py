@@ -14,7 +14,7 @@ class CachingConfig(AppConfig):
         # init tilestache config.obj
         from .utils import TilestacheConfig
         self.tilestache_cfg = TilestacheConfig()
-        #self.tilestache_cfg.save_hash_file()
+        self.tilestache_cfg.save_hash_file()
 
 
 
