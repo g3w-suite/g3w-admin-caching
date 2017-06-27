@@ -15,12 +15,6 @@ from .models import G3WCachingLayer
 from .utils import get_config
 from .api.permissions import TilePermission
 
-# import the logging library
-import logging
-
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
-
 
 class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
     """
@@ -117,10 +111,8 @@ class TileStacheTileApiView(APIView):
             except:
                 return Response({'status': 'layer not found'}, status=status.HTTP_404_NOT_FOUND)
 
-            logger.debug('Pre get Tile')
             status_code, headers, content = tilestache_layer.getTileResponse(coord, extension)
-            logger.debug('Status code: {}'.format(status_code))
-            logger.debug('Headers: {}'.format(headers))
+
             mimetype = headers.get('Content-Type')
             if len(content) == 0:
                 status_code = 404
