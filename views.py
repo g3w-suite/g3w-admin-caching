@@ -86,6 +86,7 @@ class ResetLayerCacheView(View):
 
         return JsonResponse({'status': 'ok', 'message': _('Cache erased!')})
 
+
 class TileStacheTileApiView(APIView):
     """
     renders tilestache tiles

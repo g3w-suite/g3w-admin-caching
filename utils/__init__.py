@@ -26,11 +26,11 @@ def get_config():
     tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
     logger.debug('ID Tielstache_cfg: {}'.format(id(tilestache_cfg)))
     if os.path.exists(tilestache_cfg.file_hash_name):
-        id = tilestache_cfg.read_hash_file()
-        logger.debug('Read hash file: {}'.format(id))
-        if id != tilestache_cfg.get_cache_hash():
+        cid = tilestache_cfg.read_hash_file()
+        logger.debug('Read hash file: {}'.format(cid))
+        if cid != tilestache_cfg.get_cache_hash():
             tilestache_cfg = TilestacheConfig()
-            tilestache_cfg.set_cache_hash()
+            tilestache_cfg.set_cache_hash(cid)
             logger.debug('Cache hush: {}'.format(tilestache_cfg.get_cache_hash()))
     return tilestache_cfg
 
@@ -144,8 +144,8 @@ class TilestacheConfig(object):
 
         # todo: for other cache type
 
-    def set_cache_hash(self):
-        cache.set(self.cache_key, id(self), None)
+    def set_cache_hash(self, cid):
+        cache.set(self.cache_key, cid, None)
 
     def get_cache_hash(self):
         return cache.get(self.cache_key)
