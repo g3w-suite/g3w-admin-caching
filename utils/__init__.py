@@ -173,7 +173,7 @@ class TilestacheConfig(object):
         '''
 
         with open(self.file_hash_name, "w") as f:
-            logger.debug('PID salvo file')
+            logger.debug('PID salvo file {}'.format(cid))
             fcntl.flock(f, fcntl.LOCK_EX)
             f.write(str(cid))
             fcntl.flock(f, fcntl.LOCK_UN)
