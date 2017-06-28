@@ -7,7 +7,7 @@ from TileStache.Config import _parseConfigLayer
 from TileStache.Caches import Disk
 from caching.models import G3WCachingLayer
 from django.apps import apps
-from django.core.cache import cache
+from django.core.cache import cache, caches
 import shutil
 import os
 import fcntl
@@ -22,6 +22,11 @@ def get_config():
     Get global config tielstache object
     :return:
     """
+
+    # test mem cached
+    logger.debug('MCED get {}'.format(caches['mced'].get('chiave_globale')))
+
+
     logger.debug('-------------- get_config -----------------')
     logger.debug('PID {}'.format(os.getpid()))
     # check if file has exixst
@@ -135,7 +140,6 @@ class TilestacheConfig(object):
         """
         del(self.config.layers[layer_key_name])
 
-
     def erase_cache_layer(self, layer_key_name):
         """
         Delete cache by provder cache
@@ -173,7 +177,7 @@ class TilestacheConfig(object):
 
         with open(self.file_hash_name, "w") as f:
             logger.debug('CID salvo file {}'.format(cid))
-            fcntl.flock(f, fcntl.LOCK_EX)
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
             f.write(str(cid))
             fcntl.flock(f, fcntl.LOCK_UN)
 
