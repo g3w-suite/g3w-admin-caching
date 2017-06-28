@@ -7,14 +7,42 @@ from TileStache.Config import _parseConfigLayer
 from TileStache.Caches import Disk
 from caching.models import G3WCachingLayer
 from django.apps import apps
+from django.core.cache import cache
 import shutil
+import os
+import fcntl
+import logging
+import time
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 def get_config():
-    return apps.get_app_config('caching').tilestache_cfg
+    """
+    Get global config tielstache object
+    :return:
+    """
+    logger.debug('-------------- get_config -----------------')
+    logger.debug('PID {}'.format(os.getpid()))
+    # check if file has exixst
+    tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
+    logger.debug('CID {}'.format(id(tilestache_cfg)))
+    logger.debug('LAYERS {}'.format(tilestache_cfg.config.layers))
+    if os.path.exists(tilestache_cfg.file_hash_name):
+        cid = tilestache_cfg.read_hash_file()
+        if cid != tilestache_cfg.get_cache_hash():
+            logger.debug('Reistanzia Tcfg'.format(tilestache_cfg.config.layers))
+            tilestache_cfg = TilestacheConfig()
+            tilestache_cfg.set_cache_hash(cid)
+            apps.get_app_config('caching').tilestache_cfg = tilestache_cfg
+
+    return tilestache_cfg
 
 class TilestacheConfig(object):
 
     config_dict = dict()
+    file_hash_name = 'tilestache_hash_file.txt'
+    cache_key = 'tilestache_cfg_id'
 
     def __init__(self):
 
@@ -107,6 +135,7 @@ class TilestacheConfig(object):
         """
         del(self.config.layers[layer_key_name])
 
+
     def erase_cache_layer(self, layer_key_name):
         """
         Delete cache by provder cache
@@ -118,4 +147,47 @@ class TilestacheConfig(object):
             shutil.rmtree("{}/{}".format(self.config.cache.cachepath, layer_key_name), ignore_errors=True)
 
         # todo: for other cache type
+
+    def set_cache_hash(self, cid):
+        cache.set(self.cache_key, cid, None)
+
+    def get_cache_hash(self):
+        return cache.get(self.cache_key)
+
+    def reset_cache_hash(self):
+        cache.delete(self.cache_key)
+
+    def save_hash_file(self):
+        """
+        Write has file for check tilestache config between processes
+        :param force:
+        :return:
+        """
+
+        cid = time.time()
+        '''
+        f = open(self.file_hash_name, 'w+')
+        f.write(str(cid))
+        f.close()
+        '''
+
+        with open(self.file_hash_name, "w") as f:
+            logger.debug('CID salvo file {}'.format(cid))
+            fcntl.flock(f, fcntl.LOCK_EX)
+            f.write(str(cid))
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+        self.set_cache_hash(cid)
+
+    def read_hash_file(self):
+
+        if os.path.exists(self.file_hash_name):
+            f = open(self.file_hash_name, 'r')
+            id = f.read()
+            f.close()
+            return id if id else None
+        else:
+            return None
+
+
 

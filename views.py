@@ -69,6 +69,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             if self.activated:
                 tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
+        tilestache_cfg.save_hash_file()
 
         return super(ActiveCachingLayerView, self).form_valid(form)
 
@@ -84,6 +85,7 @@ class ResetLayerCacheView(View):
         tilestache_cfg.erase_cache_layer(layer_key_name)
 
         return JsonResponse({'status': 'ok', 'message': _('Cache erased!')})
+
 
 class TileStacheTileApiView(APIView):
     """
@@ -112,6 +114,7 @@ class TileStacheTileApiView(APIView):
                 return Response({'status': 'layer not found'}, status=status.HTTP_404_NOT_FOUND)
 
             status_code, headers, content = tilestache_layer.getTileResponse(coord, extension)
+
             mimetype = headers.get('Content-Type')
             if len(content) == 0:
                 status_code = 404
