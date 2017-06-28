@@ -81,6 +81,13 @@ class TilestacheConfig(object):
                 'path': getattr(settings, 'TILESTACHE_CACHE_DISK_PATH', 'tmp/tilestache_g3wsuite'),
                 'umask': getattr(settings, 'TILESTACHE_CACHE_DISK_UMASK', '0000')
             }
+        elif settings.TILESTACHE_CACHE_TYPE == 'Memcache':
+            return {
+                "name": "Memcache",
+                "servers": ["127.0.0.1:11211"],
+                "revision": 0,
+                "key prefix": "tilestache-1839"
+             }
         else:
             return {
                 'name': 'Test'
