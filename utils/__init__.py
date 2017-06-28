@@ -26,13 +26,14 @@ def get_config():
     tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
     logger.debug('CID {}'.format(id(tilestache_cfg)))
     logger.debug('LAYERS {}'.format(tilestache_cfg.config.layers))
+    '''
     if os.path.exists(tilestache_cfg.file_hash_name):
         cid = tilestache_cfg.read_hash_file()
         if cid != tilestache_cfg.get_cache_hash():
             tilestache_cfg = TilestacheConfig()
             tilestache_cfg.set_cache_hash(cid)
             apps.get_app_config('caching').tilestache_cfg = tilestache_cfg
-
+    '''
     return tilestache_cfg
 
 class TilestacheConfig(object):
