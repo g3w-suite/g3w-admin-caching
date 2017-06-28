@@ -10,7 +10,7 @@ from django.apps import apps
 from django.core.cache import cache
 import shutil
 import os
-
+import fcntl
 import logging
 
 logger = logging.getLogger('g3wadmin.debug')
@@ -166,9 +166,17 @@ class TilestacheConfig(object):
         """
 
         cid = id(self)
-        f = open(self.file_hash_name, 'w')
+        '''
+        f = open(self.file_hash_name, 'w+')
         f.write(str(cid))
         f.close()
+        '''
+        with open(self.file_hash_name, "w") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            f.write(str(cid))
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+
         self.set_cache_hash(cid)
 
     def read_hash_file(self):
