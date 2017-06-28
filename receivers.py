@@ -53,7 +53,7 @@ def add_caching_urs(sender, **kwargs):
     caching_layers = {str(cl): cl for cl in G3WCachingLayer.objects.all()}
     layer_key_name = "{}{}".format(layer._meta.app_label, layer.pk)
     if layer_key_name in caching_layers.keys():
-        data['values'] = {'cache_url': '{}caching/api/{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '/', layer_key_name)}
+        data['values'] = {'cache_url': '/{}caching/api/{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '', layer_key_name)}
     return data
 
 
