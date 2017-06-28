@@ -12,6 +12,7 @@ import shutil
 import os
 import fcntl
 import logging
+import time
 
 logger = logging.getLogger('g3wadmin.debug')
 
@@ -156,14 +157,14 @@ class TilestacheConfig(object):
     def reset_cache_hash(self):
         cache.delete(self.cache_key)
 
-    def save_hash_file(self, force=False):
+    def save_hash_file(self):
         """
         Write has file for check tilestache config between processes
         :param force:
         :return:
         """
 
-        cid = os.getpid()
+        cid = time.time()
         '''
         f = open(self.file_hash_name, 'w+')
         f.write(str(cid))
@@ -171,7 +172,7 @@ class TilestacheConfig(object):
         '''
 
         with open(self.file_hash_name, "w") as f:
-            logger.debug('PID salvo file {}'.format(cid))
+            logger.debug('CID salvo file {}'.format(cid))
             fcntl.flock(f, fcntl.LOCK_EX)
             f.write(str(cid))
             fcntl.flock(f, fcntl.LOCK_UN)
@@ -184,7 +185,7 @@ class TilestacheConfig(object):
             f = open(self.file_hash_name, 'r')
             id = f.read()
             f.close()
-            return int(id) if id else None
+            return id if id else None
         else:
             return None
 
