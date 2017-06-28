@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
 from .forms import ActiveCachingLayerForm
 from .models import G3WCachingLayer
-from .utils import get_config
+from .utils import get_config, TilestacheConfig
 from .api.permissions import TilePermission
 from django.core.cache import caches
 import time
@@ -71,8 +71,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
         tilestache_cfg.save_hash_file()
-        caches['mced'].set('chiave_globale', tilestache_cfg)
-
+        TilestacheConfig.set_cache_config_dict(TilestacheConfig().config_dict)
 
         return super(ActiveCachingLayerView, self).form_valid(form)
 

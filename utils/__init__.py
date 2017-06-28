@@ -23,10 +23,18 @@ def get_config():
     :return:
     """
 
-    # test mem cached
-    logger.debug('MCED get {}'.format(caches['mced'].get('chiave_globale')))
+
+    # si prova con dict
+    current_cfg = TilestacheConfig.get_cache_config_dict()
+    if current_cfg:
+        return TilestacheConfig(config_dict=current_cfg)
+    else:
+        cfg = TilestacheConfig()
+        TilestacheConfig.set_cache_config_dict(cfg.config_dict)
+        return cfg
 
 
+    '''
     logger.debug('-------------- get_config -----------------')
     logger.debug('PID {}'.format(os.getpid()))
     # check if file has exixst
@@ -42,17 +50,23 @@ def get_config():
             apps.get_app_config('caching').tilestache_cfg = tilestache_cfg
 
     return tilestache_cfg
+    '''
+
 
 class TilestacheConfig(object):
 
     config_dict = dict()
-    file_hash_name = 'tilestache_hash_file.txt'
+    file_hash_name = '/tmp/tilestache_hash_file.txt'
     cache_key = 'tilestache_cfg_id'
 
-    def __init__(self):
+    def __init__(self, config_dict=None):
 
-        self.cache_dict = self.init_cache_dict()
-        self.config_dict.update({'cache': self.cache_dict})
+        if config_dict:
+            self.config_dict = config_dict
+        else:
+            self.cache_dict = self.init_cache_dict()
+            self.config_dict.update({'cache': self.cache_dict})
+        print self.config_dict
         self.config = parseConfig(self.config_dict)
         try:
             self.init_layers()
@@ -83,7 +97,7 @@ class TilestacheConfig(object):
         for caching_layer in caching_layers:
             self.add_layer(str(caching_layer), caching_layer)
 
-    def build_layer_dict(self, caching_layer):
+    def build_layer_dict(self, caching_layer, layer_key_name):
 
         #get layer object
         Layer = apps.get_app_config(caching_layer.app_name).get_model('layer')
@@ -120,6 +134,11 @@ class TilestacheConfig(object):
                 format(layer.project.group.srid.auth_srid)
         }
 
+        # add layer_dict to config_dict
+        if 'layers' not in self.config_dict:
+            self.config_dict['layers'] = dict()
+        self.config_dict['layers'][layer_key_name] = layer_dict
+
         return layer_dict
 
     def add_layer(self, layer_key_name, caching_layer):
@@ -129,8 +148,8 @@ class TilestacheConfig(object):
         :param layer_dict:
         :return:
         """
-        self.config.layers[layer_key_name] = _parseConfigLayer(self.build_layer_dict(caching_layer), self.config,
-                                                               dirpath='.')
+        self.config.layers[layer_key_name] = _parseConfigLayer(self.build_layer_dict(caching_layer, layer_key_name),
+                                                               self.config, dirpath='.')
 
     def remove_layer(self, layer_key_name):
         """
@@ -157,6 +176,14 @@ class TilestacheConfig(object):
 
     def get_cache_hash(self):
         return cache.get(self.cache_key)
+
+    @staticmethod
+    def set_cache_config_dict(cls, cid):
+        caches['mced'].set(cls.cache_key, cid, None)
+
+    @staticmethod
+    def get_cache_config_dict(cls):
+        return caches['mced'].get(cls.cache_key)
 
     def reset_cache_hash(self):
         cache.delete(self.cache_key)
