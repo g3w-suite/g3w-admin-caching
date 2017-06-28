@@ -60,17 +60,17 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     @transaction.atomic
     def form_valid(self, form):
 
-        tilestache_cfg = get_config()
+        #tilestache_cfg = get_config()
 
         if form.cleaned_data['active']:
             if not self.activated:
                 caching_layer = G3WCachingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id)
-                tilestache_cfg.add_layer(str(caching_layer), caching_layer)
+                #tilestache_cfg.add_layer(str(caching_layer), caching_layer)
         else:
             if self.activated:
-                tilestache_cfg.remove_layer(str(self.activated))
+                #tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
-        tilestache_cfg.save_hash_file()
+        #tilestache_cfg.save_hash_file()
         TilestacheConfig.set_cache_config_dict(TilestacheConfig().config_dict)
 
         return super(ActiveCachingLayerView, self).form_valid(form)
