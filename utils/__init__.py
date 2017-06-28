@@ -177,11 +177,11 @@ class TilestacheConfig(object):
     def get_cache_hash(self):
         return cache.get(self.cache_key)
 
-    @staticmethod
+    @classmethod
     def set_cache_config_dict(cls, cid):
         caches['mced'].set(cls.cache_key, cid, None)
 
-    @staticmethod
+    @classmethod
     def get_cache_config_dict(cls):
         return caches['mced'].get(cls.cache_key)
 
