@@ -169,7 +169,6 @@ class TilestacheConfig(object):
         f = open(self.file_hash_name, 'w')
         f.write(str(cid))
         f.close()
-
         self.set_cache_hash(cid)
 
     def read_hash_file(self):
