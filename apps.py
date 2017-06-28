@@ -1,7 +1,4 @@
 from django.apps import AppConfig
-import os
-import logging
-
 
 
 class CachingConfig(AppConfig):
@@ -15,8 +12,6 @@ class CachingConfig(AppConfig):
         import caching.receivers
 
         # init tilestache config.obj
-        logger = logging.getLogger('g3wadmin.debug')
-        logger.debug('PID APPS {}'.format(os.getpid()))
         from .utils import TilestacheConfig
         self.tilestache_cfg = TilestacheConfig()
         self.tilestache_cfg.save_hash_file()
