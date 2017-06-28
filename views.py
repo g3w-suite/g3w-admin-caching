@@ -71,7 +71,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
         tilestache_cfg.save_hash_file()
-        caches['mced'].set('chiave_globale', time.time())
+        caches['mced'].set('chiave_globale', tilestache_cfg)
 
 
         return super(ActiveCachingLayerView, self).form_valid(form)
