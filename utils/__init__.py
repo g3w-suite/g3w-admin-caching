@@ -25,6 +25,7 @@ def get_config():
     # check if file has exixst
     tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
     logger.debug('CID {}'.format(id(tilestache_cfg)))
+    logger.debug('LAYERS {}'.format(tilestache_cfg.config.layers))
     if os.path.exists(tilestache_cfg.file_hash_name):
         cid = tilestache_cfg.read_hash_file()
         if cid != tilestache_cfg.get_cache_hash():
