@@ -1,2 +1,4 @@
 tilestache
+python-memcached
+python-memcached-stats
 

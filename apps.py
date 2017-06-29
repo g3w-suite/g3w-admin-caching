@@ -12,9 +12,9 @@ class CachingConfig(AppConfig):
         import caching.receivers
 
         # init tilestache config.obj
-        #from .utils import TilestacheConfig
-        #self.tilestache_cfg = TilestacheConfig()
-        #self.tilestache_cfg.save_hash_file()
+        from .utils import TilestacheConfig
+        cfg = TilestacheConfig()
+        TilestacheConfig.set_cache_config_dict(cfg.config_dict)
 
 
 

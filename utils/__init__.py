@@ -4,10 +4,10 @@ from django.http.request import QueryDict
 from django.core.urlresolvers import reverse
 from TileStache import parseConfig
 from TileStache.Config import _parseConfigLayer
-from TileStache.Caches import Disk
 from caching.models import G3WCachingLayer
 from django.apps import apps
 from django.core.cache import cache, caches
+from .cache import CACHE_CLASSES
 import shutil
 import os
 import fcntl
@@ -15,6 +15,15 @@ import logging
 import time
 
 logger = logging.getLogger('g3wadmin.debug')
+
+LAYER_CLASSES = dict()
+
+for app_name in settings.G3WADMIN_PROJECT_APPS:
+    try:
+        projectAppModule = __import__('{}.cache'.format(app_name))
+        LAYER_CLASSES[app_name] = getattr(projectAppModule.cache, 'TilestacheLayer')
+    except:
+        continue
 
 
 def get_config():
@@ -54,44 +63,37 @@ def get_config():
 
 
 class TilestacheConfig(object):
+    """
+    Wrapper class for tielstache config object
+    """
 
     config_dict = dict()
-    file_hash_name = '/tmp/tilestache_hash_file.txt'
-    cache_key = 'tilestache_cfg_id'
+    file_hash_name = getattr(settings, 'TILESTACHE_FILE_HASH', '/tmp/tilestache_hash_file.txt')
+    cache_key = getattr(settings, 'TILESTACHE_CACHE_KEY', 'tilestache_cfg_id')
+    cache_name = getattr(settings, 'TILESTACHE_CACHE_NAME', 'mced')
 
     def __init__(self, config_dict=None):
 
         if config_dict:
             self.config_dict = config_dict
+            self.init_cache()
         else:
-            self.cache_dict = self.init_cache_dict()
-            self.config_dict.update({'cache': self.cache_dict})
-        print self.config_dict
+            self.init_cache()
+            self.config_dict.update({'cache': self.cache.cache_dict})
         self.config = parseConfig(self.config_dict)
         try:
             self.init_layers()
         except:
             pass
 
-    def init_cache_dict(self):
+    def init_cache(self):
 
-        if settings.TILESTACHE_CACHE_TYPE == 'Disk':
-            return {
-                'name': 'Disk',
-                'path': getattr(settings, 'TILESTACHE_CACHE_DISK_PATH', 'tmp/tilestache_g3wsuite'),
-                'umask': getattr(settings, 'TILESTACHE_CACHE_DISK_UMASK', '0000')
-            }
-        elif settings.TILESTACHE_CACHE_TYPE == 'Memcache':
-            return {
-                "name": "Memcache",
-                "servers": ["127.0.0.1:11211"],
-                "revision": 0,
-                "key prefix": "tilestache-1839"
-             }
-        else:
-            return {
-                'name': 'Test'
-            }
+        # build cache class to instance
+        cache_type = getattr(settings, 'TILESTACHE_CACHE_TYPE', 'Test')
+        cache_type = cache_type[0].upper() + cache_type[1:].lower()
+
+        self.cache = CACHE_CLASSES[cache_type]()
+
 
     def init_layers(self):
         """
@@ -106,40 +108,7 @@ class TilestacheConfig(object):
 
     def build_layer_dict(self, caching_layer, layer_key_name):
 
-        #get layer object
-        Layer = apps.get_app_config(caching_layer.app_name).get_model('layer')
-        layer = Layer.objects.get(pk=caching_layer.layer_id)
-
-        # build template
-        base_tamplate = reverse('ows', kwargs={
-            'group_slug': '0', # avoid a query
-            'project_type': str(caching_layer.app_name),
-            'project_id': str(layer.project.pk)
-        })
-
-        # build query dict fo tilestache
-        q = QueryDict('', mutable=True)
-        q['SERVICE'] = 'WMS'
-        q['VERSION'] = '1.1.1'
-        q['REQUEST'] = 'GetMap'
-        q['BBOX'] = '$xmin,$ymin,$xmax,$ymax'
-        q['SRS'] = '$srs'
-        q['FORMAT'] = 'image/png'
-        q['TRANSPARENT'] = 'true'
-        q['LAYERS'] = layer.name
-        q['WIDTH'] = '$width'
-        q['HEIGHT'] = '$height'
-
-
-        # build dict
-        layer_dict = {
-            'provider': {
-                'name': 'url template',
-                'template': '{}{}?{}'.format(settings.TILESTACHE_LAYERS_HOST, base_tamplate, q.urlencode(safe='$'))
-            },
-            'projection': 'caching.utils.projections:CustomXYZGridProjection(\'EPSG:{}\')'.
-                format(layer.project.group.srid.auth_srid)
-        }
+        layer_dict = LAYER_CLASSES[caching_layer.app_name](caching_layer, layer_key_name).layer_dict
 
         # add layer_dict to config_dict
         if 'layers' not in self.config_dict:
@@ -173,10 +142,7 @@ class TilestacheConfig(object):
         :return:
         """
 
-        if isinstance(self.config.cache, Disk):
-            shutil.rmtree("{}/{}".format(self.config.cache.cachepath, layer_key_name), ignore_errors=True)
-
-        # todo: for other cache type
+        self.cache.reset_cache_layer(layer_key_name)
 
     def set_cache_hash(self, cid):
         cache.set(self.cache_key, cid, None)
@@ -186,11 +152,11 @@ class TilestacheConfig(object):
 
     @classmethod
     def set_cache_config_dict(cls, cid):
-        caches['mced'].set(cls.cache_key, cid, None)
+        caches[cls.cache_name].set(cls.cache_key, cid, None)
 
     @classmethod
     def get_cache_config_dict(cls):
-        return caches['mced'].get(cls.cache_key)
+        return caches[cls.cache_name].get(cls.cache_key)
 
     def reset_cache_hash(self):
         cache.delete(self.cache_key)
