@@ -5,17 +5,20 @@ from django.http import HttpResponse, JsonResponse
 from django.db import transaction
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+from django.utils.decorators import method_decorator
 import TileStache
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
+from core.utils.decorators import project_type_permission_required
 from .forms import ActiveCachingLayerForm
 from .models import G3WCachingLayer
 from .utils import get_config, TilestacheConfig
 from .api.permissions import TilePermission
 from django.core.cache import caches
 import time
+
 
 class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
     """
@@ -25,6 +28,8 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     form_class = ActiveCachingLayerForm
     template_name = 'caching/caching_layer_active_form.html'
 
+    @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
+                                                       return_403=True))
     def dispatch(self, request, *args, **kwargs):
         self.layer_id = kwargs['layer_id']
         return super(ActiveCachingLayerView, self).dispatch(request, *args, **kwargs)
