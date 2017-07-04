@@ -26,8 +26,14 @@ class ActiveCachingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
                         css_class='col-md-3'
                     ),
                     Div(
-                        HTML("<a id='restcache' style='margin-top: 8px;' href='#' class='btn btn-sm btn-success'><i class='fa fa-eraser'></i> {}</a>"
-                             .format(_('Reset cache'))),
+                        Div(
+                            HTML("<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Action <span class='caret'></span></button>"),
+                            HTML("<ul class='dropdown-menu'>"
+                             "<li><a id='restcache' href='#'><i class='fa fa-eraser'></i> {}</a></li>"
+                             "<li><a id='restcache_for_project' href='#'><i class='fa fa-eraser'></i> {}</a></li>"
+                             "</ul>".format(_('Reset cache'), 'Pippo')),
+                            css_class='btn-group'
+                        ),
                         css_class='col-md-9'
                     ),
 
