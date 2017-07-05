@@ -17,6 +17,7 @@ from .models import G3WCachingLayer
 from .utils import get_config, TilestacheConfig
 from .api.permissions import TilePermission
 from django.core.cache import caches
+from qdjango.models import Layer as QdjangoLayer
 import time
 
 
@@ -85,11 +86,26 @@ class ResetLayerCacheView(View):
     """
     Reset cache layer
     """
+
+    def _reset_layer_cache(self, project_type, layer_id):
+        self.tilestache_cfg.erase_cache_layer('{}{}'.format(project_type, layer_id))
+
     def get(self, request, *args, **kwargs):
 
-        tilestache_cfg = get_config()
-        layer_key_name = '{}{}'.format(kwargs['project_type'], kwargs['layer_id'])
-        tilestache_cfg.erase_cache_layer(layer_key_name)
+        # check for project layer resect
+        project_mode = 'reset_by_project' in request.GET
+        self.tilestache_cfg = get_config()
+        if project_mode:
+
+            cache_module = __import__('{}.cache'.format(kwargs['project_type']))
+            get_layer_to_erase_for_project = getattr(cache_module.cache, 'get_layer_to_erase_for_project')
+
+            layers = get_layer_to_erase_for_project(kwargs['layer_id'])
+            for l in layers:
+                self._reset_layer_cache(kwargs['project_type'], l.pk)
+
+        else:
+            self._reset_layer_cache(kwargs['project_type'], kwargs['layer_id'])
 
         return JsonResponse({'status': 'ok', 'message': _('Cache erased!')})
 
