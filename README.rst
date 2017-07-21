@@ -44,7 +44,14 @@ To build cadastre_config on to 'default' database:
 
 ::
 
-    ./manage.py migrate cadastre
+    ./manage.py migrate caching
 
 
+Add tilestache configurazione
 
+::
+
+    # CVACHING CONFIG
+    TILESTACHE_CACHE_NAME = 'default'
+    TILESTACHE_CACHE_TYPE = 'Disk' # or 'Memcache'
+    TILESTACHE_CACHE_DISK_PATH = '/tmp/tilestache_cache/'
