@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 08:59+0000\n"
+"POT-Creation-Date: 2017-09-19 14:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,6 +46,6 @@ msgstr "Cache del layer"
 msgid "Activation layer caching"
 msgstr "Attivazione cache del layer"
 
-#: caching/views.py:86
+#: caching/views.py:94
 msgid "Cache erased!"
 msgstr "Cache eliminata!"
