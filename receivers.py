@@ -1,5 +1,5 @@
 from django.apps import apps
-from django.template import loader, Context
+from django.template import loader
 from django.dispatch import receiver
 from django.conf import settings
 from django.db.models.signals import pre_delete, post_save
@@ -35,7 +35,7 @@ def editingLayerAction(sender, **kwargs):
             kwargs.update(app_configs.CACHING_LAYER_ACTION)
 
         template = loader.get_template('caching/layer_action.html')
-        return template.render(Context(kwargs))
+        return template.render(kwargs)
 
 
 @receiver(after_serialized_project_layer)
