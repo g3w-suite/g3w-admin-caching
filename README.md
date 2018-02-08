@@ -3,8 +3,8 @@
 G3W-ADMIN module for caching layers data by tilestache (http://tilestache.org/).
 
 
-Requirements
-------------
+Pip requirements
+----------------
 
 * tilestache
 
