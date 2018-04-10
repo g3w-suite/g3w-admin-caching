@@ -28,7 +28,7 @@ for app_name in settings.G3WADMIN_PROJECT_APPS:
 
 def get_config():
     """
-    Get global config tielstache object
+    Get global config tilestache object
     :return:
     """
 

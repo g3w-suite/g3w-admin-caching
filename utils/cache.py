@@ -29,6 +29,22 @@ class TilestacheCacheTest(object):
             }
 
 
+class TilestacheCacheS3(TilestacheCache):
+
+    def _init_cache_dict(self):
+        self.cache_dict = {
+            'name': 'S3',
+            'bucket': getattr(settings, 'TILESTACHE_CACHE_S3_BUCKET', 'g3wsuite-data'),
+            'access': getattr(settings, 'TILESTACHE_CACHE_S3_ACCESS', ''),
+            'secret': getattr(settings, 'TILESTACHE_CACHE_S3_SECRET', '')
+        }
+
+    def reset_cache_layer(self, layer_key_name):
+
+        # todo
+        pass
+
+
 class TilestacheCacheDisk(TilestacheCache):
     """
     Class to manage tilestache of memcached type
@@ -85,5 +101,6 @@ class TilestacheCacheMemcache(TilestacheCache):
 CACHE_CLASSES = {
         'Disk': TilestacheCacheDisk,
         'Memcache': TilestacheCacheMemcache,
-        'Test': TilestacheCacheTest
+        'Test': TilestacheCacheTest,
+        'S3': TilestacheCacheS3
     }
