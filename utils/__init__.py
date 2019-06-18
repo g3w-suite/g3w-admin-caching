@@ -16,6 +16,8 @@ import time
 
 logger = logging.getLogger('g3wadmin.debug')
 
+TILESTACHE_CACHE_BUFFER_SIZE=getattr(settings, 'TILESTACHE_CACHE_BUFFER_SIZE')
+
 LAYER_CLASSES = dict()
 
 for app_name in settings.G3WADMIN_PROJECT_APPS:
@@ -109,6 +111,9 @@ class TilestacheConfig(object):
     def build_layer_dict(self, caching_layer, layer_key_name):
 
         layer_dict = LAYER_CLASSES[caching_layer.app_name](caching_layer, layer_key_name).layer_dict
+
+        if TILESTACHE_CACHE_BUFFER_SIZE is not None:
+            layer_dict["metatile"] = { "buffer": TILESTACHE_CACHE_BUFFER_SIZE }
 
         # add layer_dict to config_dict
         if 'layers' not in self.config_dict:
