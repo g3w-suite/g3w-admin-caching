@@ -16,7 +16,7 @@ import time
 
 logger = logging.getLogger('g3wadmin.debug')
 
-TILESTACHE_CACHE_BUFFER_SIZE=getattr(settings, 'TILESTACHE_CACHE_BUFFER_SIZE')
+TILESTACHE_CACHE_BUFFER_SIZE = getattr(settings, 'TILESTACHE_CACHE_BUFFER_SIZE', None)
 
 LAYER_CLASSES = dict()
 
