@@ -2,6 +2,8 @@
 
 G3W-ADMIN module for caching layers data by tilestache (http://tilestache.org/).
 
+##***IMPORTANT***
+At the moment module works only with **TILESTACHE_CACHE_TYPE = 'Disk'**, soon try to fix Memcached cache system.
 
 Pip requirements
 ----------------

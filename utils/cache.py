@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.core.cache import caches
+
+#todo: rewrite for python3 memcached cache.
 #from memcached_stats import MemcachedStats
 import shutil
 
