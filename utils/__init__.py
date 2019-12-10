@@ -45,25 +45,6 @@ def get_config():
         return cfg
 
 
-    '''
-    logger.debug('-------------- get_config -----------------')
-    logger.debug('PID {}'.format(os.getpid()))
-    # check if file has exixst
-    tilestache_cfg = apps.get_app_config('caching').tilestache_cfg
-    logger.debug('CID {}'.format(id(tilestache_cfg)))
-    logger.debug('LAYERS {}'.format(tilestache_cfg.config.layers))
-    if os.path.exists(tilestache_cfg.file_hash_name):
-        cid = tilestache_cfg.read_hash_file()
-        if cid != tilestache_cfg.get_cache_hash():
-            logger.debug('Reistanzia Tcfg'.format(tilestache_cfg.config.layers))
-            tilestache_cfg = TilestacheConfig()
-            tilestache_cfg.set_cache_hash(cid)
-            apps.get_app_config('caching').tilestache_cfg = tilestache_cfg
-
-    return tilestache_cfg
-    '''
-
-
 class TilestacheConfig(object):
     """
     Wrapper class for tielstache config object

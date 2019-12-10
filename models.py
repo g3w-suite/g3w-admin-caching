@@ -8,5 +8,5 @@ class G3WCachingLayer(models.Model):
     app_name = models.CharField(max_length=255)
     layer_id = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}{}".format(self.app_name, self.layer_id)

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.cache import caches
-from memcached_stats import MemcachedStats
+#from memcached_stats import MemcachedStats
 import shutil
 
 

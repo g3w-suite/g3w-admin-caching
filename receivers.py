@@ -39,9 +39,9 @@ def editingLayerAction(sender, **kwargs):
 
 
 @receiver(after_serialized_project_layer)
-def add_caching_urs(sender, **kwargs):
+def add_caching_urls(sender, **kwargs):
     """
-    Receiver to ad rcaching data and url.
+    Receiver to add caching data and url.
     """
     layer = kwargs['layer']
     data = {
