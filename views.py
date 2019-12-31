@@ -156,7 +156,7 @@ class TileStacheTileApiView(APIView):
             return Response(
                 {
                     'status': 'error',
-                    'message': ex.message
+                    'message': str(ex)
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
